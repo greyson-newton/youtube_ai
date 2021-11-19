@@ -155,6 +155,7 @@ def gather_places():
 # gather_places()
 
 url = "https://www.allsides.com/unbiased-balanced-news"
+
 def gather_political_news(url):
 
 	# Get Allsides webpage
@@ -172,15 +173,15 @@ def gather_political_news(url):
 	print(breaking_news_topics)
 
 	# get regular news for training data
-	reg_news_url = "https://www.allsides.com/topics-issues"
-	regular_news_links,regular_news_topics = [],[]
-	response = requests.get(reg_news_url)
-	soup = BeautifulSoup(response.text, "html.parser")
-	target = soup.find('div', class_='row-fluid normal-body').find_all('a')
-	for a in target:
-		regular_news_links.append(a['href'])
-		regular_news_topics.append(a['text'])
-	print(regular_news_topics)
+	# reg_news_url = "https://www.allsides.com/topics-issues"
+	# regular_news_links,regular_news_topics = [],[]
+	# response = requests.get(reg_news_url)
+	# soup = BeautifulSoup(response.text, "html.parser")
+	# target = soup.find('div', class_='row-fluid normal-body').find_all('a')
+	# for a in target:
+	# 	regular_news_links.append(a['href'])
+	# 	regular_news_topics.append(a['text'])
+	# print(regular_news_topics)
 	# Convert news topics to bs4
 	soups = []
 	for l in breaking_news_links:
@@ -202,21 +203,7 @@ def gather_political_news(url):
 	left_bias_id,center_bias_id,right_bias_id = [],[],[]
 	for i,s in enumerate(soups):
 		tag=False
-		page_title = s.find("div", {"class": "span12"}).find("h1")
-		if page_title != None:
-			page_titles.append(page_title.text)
-		else:
-			page_title = s.select('#blog-wrapper > div:nth-child(1) > div > h2')
-			if page_title != None:
-				page_titles.append(page_title[0].text)
-			else:
-				page_titles.append('page title not found')
-	
-		page_description = s.find("div", {"class": "span12"}).find("div", {"class": "span12 topic-description"})
-		if page_description == None:
-			page_descriptions.append('tag seach, no desc.')
-		else:
-			page_descriptions.append(page_description.text)
+
 
 
 		not_found='news not found'
@@ -232,7 +219,8 @@ def gather_political_news(url):
 			if len(tag)>=1:
 				print(breaking_news_topics[i], 'is a tag')
 				left_news_selector='#block-views-news-trio-tag-block > h2'
-				left_grid_selector='#block-views-news-trio-tag-block > div'				
+				# left_grid_selector='#block-views-news-trio-tag-block > div'
+				left_grid_selector='#block-views-news-trio-tag-block > div > div'				
 				right_news_selector='#block-views-news-trio-tag-block-2 > h2'
 				right_grid_selector='#block-views-news-trio-tag-block-2 > div'
 				center_news_selector='#block-views-news-trio-tag-block-3 > h2'
@@ -240,22 +228,42 @@ def gather_political_news(url):
 				tag=True
 			elif len(tag)==0:
 				print(breaking_news_topics[i], 'is a topic')
-				left_news_selector='#block-views-news-trio-topic-block > h2'
-				left_grid_selector='#block-views-news-trio-topic-block > div'
-				right_news_selector='#block-views-news-trio-topic-block-2 > h2'
-				right_grid_selector='#block-views-news-trio-topic-block-2 > div'
-				center_news_selector='#block-views-news-trio-topic-block-1 > h2'
-				center_grid_selector='#block-views-news-trio-topic-block-1 > div'
-				#block-views-news-trio-topic-block-1			
-		# checking for existence
-		news_from_left = s.select(left_news_selector)
-		if news_from_left != None and len(news_from_left)>=1:
-			left_news.append(news_from_left[0].text)
-		else:
-			left_news.append(not_found)
-			print(breaking_news_topics[i], 'not found')
+				topic_grid_selector='#block-views-balanced-news-trio-block-2 > div > div > div'
+
+				# left_news_selector='#block-views-news-trio-topic-block > h2'
+				# # left_grid_selector='#block-views-news-trio-topic-block > div'
+				# left_grid_selector='#block-views-news-trio-topic-block > div > div.view-content'
+
+				# right_news_selector='#block-views-news-trio-topic-block-2 > h2'
+				# # right_grid_selector='#block-views-news-trio-topic-block-2 > div'
+				# right_grid_selector='#block-views-news-trio-topic-block-2 > div > div.view-content'
+
+				# center_news_selector='#block-views-news-trio-topic-block-1 > h2'
+				# # center_grid_selector='#block-views-news-trio-topic-block-1 > div'
+				# center_grid_selector='#block-views-news-trio-topic-block-1 > div > div.view-content'
+				# block-views-balanced-news-trio-block-2 > div > div > div
+
 		# getting news from column
-		left_news_grid_handle=s.select(left_grid_selector)
+		topic_grid=s.select(topic_grid_selector)
+		l_news,r_news,c_news=[],[],[]
+		
+		handle=topic_grid[0]
+		l_items=handle.find_all("div",{"class":"news-item left"})
+		print(len(l_item))
+		r_items=handle.find_all("div",{"class":"news-item right"})
+		c_items=handle.find_all("div",{"class":"news-item center"})
+		for item in l_items
+			l_type=l_item.find("div",{"class":"news-type-label"})
+			l_link=l_item.find('a').href
+			l_title=l_item.find('a').find('div').text
+			print(l_title,l_type,l_link)
+
+			# l_news.append()
+			# r_news.append()
+			# c_news.append()
+
+		left_news_grid_handle=s.select()
+		print(left_news_grid_handle)
 		if left_news_grid_handle != None and len(left_news_grid_handle)>=1:
 			left_grid=left_news_grid_handle[0]
 			for news_title in left_grid.find_all("div", {"class": "news-title"}):
@@ -348,6 +356,10 @@ def gather_political_news(url):
 				# print(news_bias.find("div", {"class": "field-content"}))	
 	# for title,description,source,bias in zip(left_titles,left_descs,left_src,left_bias):
 	# 	print(title.strip(),'\t',source.strip(),'\t',bias.strip(),'\n',description.strip(),'\n')
+
+	# organizing data
+	fname="/Users/greysonnewton/Desktop/txt-spch/youtube/youtube_ai/nlp/data/allsides_data/"
+
 	left_df,right_df,center_df=pd.DataFrame(),pd.DataFrame(),pd.DataFrame()
 	left_df['topic_id']=left_topics_id
 	left_df['bias_id']=left_bias_id
@@ -357,8 +369,8 @@ def gather_political_news(url):
 	left_df['bias']=left_bias
 
 	left_df['desc.']=left_descs
-	left_df.to_csv('./allsides_data/left_breaking_news.csv', index=False)
-	left_df.to_pickle("./allsides_data/left_breaking_news.pkl")
+	left_df.to_csv(fname+"left_breaking_news.csv", index=False)
+	left_df.to_pickle(fname+"left_breaking_news.pkl")
 
 	right_df['topic_id']=right_topics_id
 	right_df['bias_id']=right_bias_id
@@ -367,8 +379,8 @@ def gather_political_news(url):
 	right_df['source']=right_src
 	right_df['bias']=right_bias
 	right_df['desc.']=right_descs
-	right_df.to_csv('./allsides_data/right_breaking_news.csv', index=False)
-	right_df.to_pickle("./allsides_data/right_breaking_news.pkl")
+	right_df.to_csv(fname+"right_breaking_news.csv", index=False)
+	right_df.to_pickle(fname+"right_breaking_news.pkl")
 
 	center_df['topic_id']=center_topics_id
 	center_df['bias_id']=center_bias_id
@@ -377,8 +389,8 @@ def gather_political_news(url):
 	center_df['source']=center_src
 	center_df['bias']=center_bias
 	center_df['desc.']=center_descs
-	center_df.to_csv('./allsides_data/center_breaking_news.csv', index=False)
-	center_df.to_pickle("./allsides_data/center_breaking_news.pkl")
+	center_df.to_csv(fname+"center_breaking_news.csv", index=False)
+	center_df.to_pickle(fname+"center_breaking_news.pkl")
 
 	topics,topics_id,bias_id,titles,srcs,biases,descs = [],[],[],[],[],[],[]
 	for left,center,right in zip(left_topics,right_topics,center_topics):
@@ -420,8 +432,8 @@ def gather_political_news(url):
 	df['bias']=biases
 	df['desc.']=descs
 	print(topics_id)
-	df.to_csv('./allsides_data/breaking_news.csv', index=False)
-	df.to_pickle("./allsides_data/breaking_news.pkl")
+	df.to_csv(fname+"breaking_news.csv", index=False)
+	df.to_pickle(fname+"breaking_news.pkl")
 	# print(df.head())
 	# print(left_news)
 	page_titles = [title.replace('on Allsides', '') for title in page_titles]
